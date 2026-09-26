@@ -7,13 +7,10 @@
 
 export PATH="/opt/homebrew/bin:$PATH"
 
-# Only scroll the title while the mouse is over it — constant scrolling is
-# distracting. Otherwise the label stays truncated to max_chars.
-case "$SENDER" in
-  mouse.entered) sketchybar --set "$NAME" scroll_texts=on;  exit 0 ;;
-  mouse.exited)  sketchybar --set "$NAME" scroll_texts=off; exit 0 ;;
-  mouse.clicked) media-control toggle-play-pause; sleep 0.3 ;;
-esac
+if [ "$SENDER" = "mouse.clicked" ]; then
+  media-control toggle-play-pause
+  sleep 0.3
+fi
 
 MEDIA="$(media-control get 2>/dev/null)"
 TITLE="$(echo "$MEDIA" | jq -r '.title // empty' 2>/dev/null)"
