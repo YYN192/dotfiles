@@ -26,6 +26,14 @@
 !sketchybar/sketchybarrc
 !sketchybar/plugins/
 !sketchybar/plugins/space.sh
+!sketchybar/plugins/*.sh
 
 !yabai/
 !yabai/yabairc
+!yabai/quit-on-last-window.sh
+
+!skhd/
+!skhd/skhdrc
+
+!raycast-scripts/
+!raycast-scripts/keymap.sh

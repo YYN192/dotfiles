@@ -17,6 +17,7 @@ fi
 echo "--- Taps ---"
 brew tap cormacrelf/tap
 brew tap FelixKratz/formulae
+brew tap koekeishiya/formulae   # yabai + skhd live here
 
 # ── Packages ──────────────────────────────────────────────────────────────────
 echo "--- Packages ---"
@@ -29,6 +30,7 @@ brew install \
     fisher \
     openjdk@21 \
     sketchybar \
+    skhd \
     starship \
     yabai
 
@@ -52,8 +54,9 @@ fish -c "fisher update"
 # ── Script permissions ────────────────────────────────────────────────────────
 echo "--- Script permissions ---"
 chmod +x "$HOME/.config/switch-theme.sh"
-chmod +x "$HOME/.config/fish/set-dark-theme.fish"
-chmod +x "$HOME/.config/fish/set-light-theme.fish"
+# These two fish theme files aren't shipped in the repo; guard so `set -e` doesn't abort the install.
+[ -f "$HOME/.config/fish/set-dark-theme.fish" ]  && chmod +x "$HOME/.config/fish/set-dark-theme.fish"
+[ -f "$HOME/.config/fish/set-light-theme.fish" ] && chmod +x "$HOME/.config/fish/set-light-theme.fish"
 
 # ── Yabai scripting addition sudoers entry ────────────────────────────────────
 echo "--- Yabai scripting addition ---"
