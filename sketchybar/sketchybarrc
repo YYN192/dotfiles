@@ -9,7 +9,6 @@ sketchybar --bar position=top \
                blur_radius=30 \
                color=0x00000000 \
                display=main \
-               notch_width=185 \
                topmost=off
 
 # Item Defaults
@@ -64,6 +63,18 @@ sketchybar --add item weather right \
                          label.padding_right=10 \
            --subscribe weather system_woke
 
+# Front app — part of the right group. Fixed label width so the pill never
+# changes size (and nothing shifts) when you switch apps.
+sketchybar --add item front_app right \
+           --set front_app label.max_chars=10 \
+                           label.width=76 \
+                           label.align=center \
+                           icon.font="sketchybar-app-font:Regular:18.0" \
+                           icon.color="$COLOR_LOVE" \
+                           label.color="$COLOR_LOVE" \
+                           script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
 # Now playing (hidden when nothing is playing; click to play/pause)
 sketchybar --add item media right \
            --set media script="$PLUGIN_DIR/media.sh" \
@@ -97,16 +108,5 @@ sketchybar --add item space_watcher center \
            --set space_watcher background.drawing=off \
                                  script="$PLUGIN_DIR/space_windows.sh" \
            --subscribe space_watcher space_windows_change
-
-# Front app — sits just right of the notch ("e"): with the macOS menu bar
-# auto-hidden the bar shares the notch row, and 10 spaces + the app name
-# don't fit left of it.
-sketchybar --add item front_app e \
-           --set front_app label.max_chars=10 \
-                           icon.font="sketchybar-app-font:Regular:18.0" \
-                           icon.color="$COLOR_LOVE" \
-                           label.color="$COLOR_LOVE" \
-                           script="$PLUGIN_DIR/front_app.sh" \
-           --subscribe front_app front_app_switched
 
 sketchybar --update
