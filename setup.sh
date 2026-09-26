@@ -28,6 +28,7 @@ brew install \
     fastfetch \
     fish \
     fisher \
+    media-control \
     openjdk@21 \
     sketchybar \
     skhd \
