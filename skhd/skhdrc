@@ -1,4 +1,19 @@
 # cmd + alt + ctrl is set to capslock using karabiner elements
+# (this combo = your "Super" key; just press Caps Lock)
+
+# ── Hyprland / i3 style app keys ──────────────────────────────────────────────
+# Super + /       -> open the keybindings cheatsheet in Raycast (rofi-style, native + searchable)
+# (script lives in ~/.config/raycast-scripts/keymap.sh; add that folder in Raycast → Extensions → Add Script Directory)
+cmd + alt + ctrl - 0x2C : open -g "raycast://script-commands/keymap"
+
+# Super + Return  -> open a new terminal (Ghostty)
+cmd + alt + ctrl - return : open -na Ghostty
+# Super + D       -> app launcher (Raycast)
+cmd + alt + ctrl - d : open -a Raycast
+# Super + C       -> close the focused window (Hyprland killactive)
+cmd + alt + ctrl - c : yabai -m window --close
+# Super + V       -> toggle floating (same as Super + Space below)
+cmd + alt + ctrl - v : yabai -m window --toggle float --grid 4:4:1:1:2:2
 
 # Navigation
 cmd + alt + ctrl - h : yabai -m window --focus west
