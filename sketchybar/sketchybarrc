@@ -43,7 +43,7 @@ sketchybar --add item volume right \
            --set volume icon.color="$COLOR_PINE" \
                         label.color="$COLOR_PINE" \
                         script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change
+           --subscribe volume volume_change mouse.scrolled
 
 # Battery level
 sketchybar --add item battery right \
