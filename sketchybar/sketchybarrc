@@ -75,32 +75,41 @@ sketchybar --add item front_app right \
                            script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
 
-# Now playing — album art as the icon + "Title · Artist", scrolls only on
-# hover, click to play/pause. Live data and hover-scroll logic from
-# Kcraft059/sketchybar-config's music item (plugins/music_artwork.sh,
-# music_title.sh); laid out as one ordinary pill to match the rest of the bar.
-ART_SIZE=20
+# Now playing — album art as the icon + "Title · Artist", shortened with "…"
+# at a word boundary and scrolled in full on hover; click to play/pause.
+# Live data and hover logic from Kcraft059/sketchybar-config's music item
+# (plugins/music_artwork.sh, music_title.sh), laid out as an ordinary pill.
+#
+# Icon geometry (SketchyBar src/text.c): with a fixed icon.width the art is
+# drawn at image.padding_left, and a centred glyph lands at
+# width/2 + (padding_left - padding_right)/2. So with width = L + ART + R,
+# icon.padding_left - icon.padding_right = L - R centres the play/pause glyph
+# exactly on the art.
+ART_SIZE=22
+ART_PAD_L=8
+ART_PAD_R=4
 
 music=(
   drawing=off
   script="$PLUGIN_DIR/music_artwork.sh $ART_SIZE"
   click_script="media-control toggle-play-pause"
-  icon="􀊆"                                   # play/pause flash over the art
-  icon.font="SF Pro:Bold:11.0"
-  icon.color=0x00000000                      # hidden until state changes
+  icon=""                                    # play/pause flash, or a note when there is no art
+  icon.font="SF Pro:Bold:12.0"
+  icon.color="$COLOR_TEXT"
   icon.shadow.drawing=on
   icon.shadow.color="$COLOR_BASE"
-  icon.shadow.distance=2
+  icon.shadow.distance=1
   icon.align=center
-  icon.width=$ART_SIZE
-  icon.padding_left=6
-  icon.padding_right=4
+  icon.width=$((ART_PAD_L + ART_SIZE + ART_PAD_R))
+  icon.padding_left=$((ART_PAD_L - ART_PAD_R))
+  icon.padding_right=0
   icon.background.drawing=on
-  icon.background.image.corner_radius=4
-  icon.background.image.border_color="$COLOR_MUTED"
-  icon.background.image.border_width=1
-  label.color="$COLOR_ROSE"
-  label.max_chars=11
+  icon.background.image.padding_left=$ART_PAD_L
+  icon.background.image.corner_radius=5
+  icon.background.image.border_width=0
+  label.font="SF Pro:Semibold:13.0"
+  label.color="$COLOR_TEXT"
+  label.max_chars=13
   scroll_texts=off
   update_freq=0
 )

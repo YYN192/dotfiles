@@ -6,7 +6,11 @@
 # Local changes (everything else is the original logic):
 #   - one pill instead of artwork + two-line title/subtitle + bracket: the art is
 #     the icon's background image (cropped square), the label is "Title · Artist"
-#   - play/pause flash shown by icon colour (hiding the icon would hide the art)
+#   - play/pause flash shown by setting/clearing the icon glyph (hiding the icon
+#     would hide the art; a transparent colour still drew the glyph's shadow)
+#   - label shortened at a word boundary with "…"; full text scrolls on hover
+#   - tracks without artwork (ads, some browser media) show a music-note glyph
+#     instead of an empty gap or the previous track's cover
 #   - hover events handed to music_title.sh before the stream starts
 #   - image size/format via macOS's built-in `sips` instead of ImageMagick
 #   - their log_handler.sh replaced by no-op sendLog/sendWarn
@@ -43,6 +47,23 @@ if [[ -n "$pids" ]]; then
 fi
 
 ART_SIZE="$1"
+MAX_CHARS=13
+NO_ART_ICON="􀑪"
+idle_icon="$NO_ART_ICON"   # glyph shown when not flashing play/pause
+LABEL_FULL="${TMPDIR}sketchybar/music_label_full"
+LABEL_SHORT="${TMPDIR}sketchybar/music_label_short"
+
+# Shorten to MAX_CHARS at a word boundary, ending in "…" (unicode-aware)
+shorten() {
+	perl -CSA -e '
+		my ($s, $m) = @ARGV;
+		if (length($s) <= $m) { print $s; exit }
+		my $c = substr($s, 0, $m - 1);
+		if (substr($s, $m - 1, 1) !~ /\s/ && $c =~ /\s/) { $c =~ s/\s+\S*$// }
+		$c =~ s/[\s\x{00B7},:;\-\x{2013}\x{2014}]+$//;
+		print $c . "\x{2026}";
+	' "$1" "$2"
+}
 
 ### Open a stream to get current media continously
 
@@ -108,8 +129,11 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 
 			### Set artwork as the icon's background image, then purge image
 
+			idle_icon=""
 			sketchybar --set $NAME icon.background.image=$tmpfile.$ext \
-				icon.background.image.scale=$scale
+				icon.background.image.scale=$scale \
+				icon.background.image.drawing=on \
+				icon="$idle_icon"
 
 			rm -f $tmpfile* && sendLog "Cleaned artwork image generated at $tmpfile.$ext" "vomit"
 		fi
@@ -119,6 +143,13 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 		if [[ $(echo $line | jq -r .payload.title) != "null" ]]; then
 
 			title_label="$(echo $line | jq -r .payload.title)"
+
+			### New track without artwork in the same update: drop the old cover
+			# (Spotify often sends the artwork a moment later; that re-enables it)
+			if [[ $artworkData == "null" ]]; then
+				idle_icon="$NO_ART_ICON"
+				sketchybar --set $NAME icon.background.image.drawing=off icon="$idle_icon"
+			fi
 			artist="$(echo "$line" | jq -r '.payload.artist // empty')"
 
 			label="$title_label"
@@ -126,7 +157,10 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 				label+=" · $artist"
 			fi
 
-			sketchybar --set $NAME label="$label"
+			short="$(shorten "$label" "$MAX_CHARS")"
+			printf '%s' "$label" >"$LABEL_FULL"
+			printf '%s' "$short" >"$LABEL_SHORT"
+			sketchybar --set $NAME label="$short" scroll_texts=off
 		fi
 
 		### Set Playing state indicator
@@ -135,22 +169,18 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 			case $playing in
 			"true")
 				sendLog "Updating playing state to play" "vomit"
-				sketchybar --animate tanh 5 \
-					--set $NAME icon="􀊆" \
-					icon.color="$COLOR_TEXT"
+				sketchybar --set $NAME icon="􀊆"
 				{
 					sleep 5
-					sketchybar --animate tanh 45 --set $NAME icon.color=0x00000000
+					sketchybar --set $NAME icon="$idle_icon"
 				} &
 				;;
 			"false")
 				sendLog "Updating playing state to pause" "vomit"
-				sketchybar --animate tanh 5 \
-					--set $NAME icon="􀊄" \
-					icon.color="$COLOR_TEXT"
+				sketchybar --set $NAME icon="􀊄"
 				{
 					sleep 5
-					sketchybar --animate tanh 45 --set $NAME icon.color=0x00000000
+					sketchybar --set $NAME icon="$idle_icon"
 				} &
 				;;
 			esac
