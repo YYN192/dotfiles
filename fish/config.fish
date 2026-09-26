@@ -1,6 +1,7 @@
 fish_add_path /opt/homebrew/bin
 fish_add_path /opt/homebrew/sbin
 fish_add_path $HOME/.cargo/bin
+fish_add_path $HOME/.spicetify
 fish_add_path ~/.config/emacs/bin
 fish_add_path /opt/homebrew/opt/openjdk@21/bin
 # Maestro CLI — its installer only writes to bash/zsh profiles, not fish.

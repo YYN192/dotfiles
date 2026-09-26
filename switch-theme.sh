@@ -24,10 +24,25 @@ set_bar_colors() {
     fi
 }
 
+# Spotify (Spicetify, Ziro theme): switch the colour scheme without restarting
+# Spotify; it shows on the next launch. `refresh` never closes Spotify (in
+# spicetify.go only apply/restore trigger a restart). Shares a lock with
+# scripts/spicetify-autoupdate.sh, which sets the scheme itself at login.
+set_spotify_scheme() {
+    local sp="$HOME/.spicetify/spicetify" lock="/tmp/spicetify-$(id -u).lock"
+    [ -x "$sp" ] || return 0
+    grep -Eq "^color_scheme[[:space:]]*=[[:space:]]*$1\$" "$HOME/.config/spicetify/config-xpui.ini" && return 0
+    mkdir "$lock" 2>/dev/null || return 0   # autoupdate is running; it sets the scheme
+    echo $$ > "$lock/pid"
+    "$sp" -q config color_scheme "$1" && "$sp" -q refresh
+    rm -rf "$lock"
+}
+
 case "$MODE" in
     dark)
         # Sketchybar
         set_bar_colors dark
+        set_spotify_scheme rose-pine
 
         # Starship
         sed -i '' 's/^palette = .*/palette = "rose-pine"/' "$CONFIG/starship.toml"
@@ -45,6 +60,7 @@ case "$MODE" in
     light)
         # Sketchybar
         set_bar_colors dawn
+        set_spotify_scheme rose-pine-dawn
 
         # Starship
         sed -i '' 's/^palette = .*/palette = "rose-pine-dawn"/' "$CONFIG/starship.toml"

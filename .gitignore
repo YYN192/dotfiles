@@ -37,3 +37,9 @@
 
 !raycast-scripts/
 !raycast-scripts/keymap.sh
+
+!scripts/
+!scripts/spicetify-autoupdate.sh
+
+!launchd/
+!launchd/com.user.spicetify-autoupdate.plist

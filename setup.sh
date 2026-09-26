@@ -97,6 +97,20 @@ EOF
 
 launchctl load "$PLIST"
 
+# ── Spotify rice: Spicetify + Ziro, kept current at every login ───────────────
+echo "--- Spicetify ---"
+chmod +x "$HOME/.config/scripts/spicetify-autoupdate.sh"
+if [ ! -x "$HOME/.spicetify/spicetify" ]; then
+    # Official installer (installs to ~/.spicetify; it asks about Marketplace,
+    # the autoupdate agent below installs/updates Marketplace and Ziro either way)
+    curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+fi
+AGENT="$HOME/Library/LaunchAgents/com.user.spicetify-autoupdate.plist"
+launchctl bootout "gui/$(id -u)/com.user.spicetify-autoupdate" 2>/dev/null || true
+sed "s#__HOME__#$HOME#g" "$HOME/.config/launchd/com.user.spicetify-autoupdate.plist" > "$AGENT"
+# Runs once now, then at every login (log: ~/Library/Logs/spicetify-autoupdate.log)
+launchctl bootstrap "gui/$(id -u)" "$AGENT" || echo "Could not load $AGENT; run it with: launchctl bootstrap gui/$(id -u) $AGENT"
+
 # ─────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "Done! Restart for the changes to take effect, then run:"
