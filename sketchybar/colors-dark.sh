@@ -11,10 +11,7 @@ COLOR_SPACE_SEL_FG="0xaa2a273f"
 COLOR_SPACE_UNSEL_BG="$COLOR_BG"
 COLOR_SPACE_UNSEL_FG="0xffebbcba"
 
-# Rosé Pine tokens used by the community components (music, volume, calendar)
+# Rosé Pine tokens used by the community components (now-playing music item)
 COLOR_BASE="0xff191724"
 COLOR_SUBTLE="0xff908caa"
 COLOR_MUTED="0xff6e6a86"
-COLOR_HL_MED="0xff403d52"
-COLOR_POPUP_BG="0xf01f1d2e"
-COLOR_POPUP_BORDER="0xff524f67"

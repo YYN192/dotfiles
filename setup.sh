@@ -29,7 +29,6 @@ brew install \
     fish \
     fisher \
     media-control \
-    switchaudio-osx \
     openjdk@21 \
     sketchybar \
     skhd \

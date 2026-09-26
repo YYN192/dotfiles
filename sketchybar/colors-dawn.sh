@@ -11,10 +11,7 @@ COLOR_SPACE_SEL_FG="0xaafaf4ed"
 COLOR_SPACE_UNSEL_BG="$COLOR_BG"
 COLOR_SPACE_UNSEL_FG="0xffd7827e"
 
-# Rosé Pine Dawn tokens used by the community components (music, volume, calendar)
+# Rosé Pine Dawn tokens used by the community components (now-playing music item)
 COLOR_BASE="0xfffaf4ed"
 COLOR_SUBTLE="0xff797593"
 COLOR_MUTED="0xff9893a5"
-COLOR_HL_MED="0xffdfdad9"
-COLOR_POPUP_BG="0xf0fffaf3"
-COLOR_POPUP_BORDER="0xffcecacd"

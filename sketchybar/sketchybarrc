@@ -30,53 +30,20 @@ sketchybar --default \
 
 # --- Items on the right ---
 
-# Popup look for the community components below
-# (FelixKratz/dotfiles default.lua popup settings, Rosé Pine colours)
-POPUP_STYLE=(
-  popup.background.color="$COLOR_POPUP_BG"
-  popup.background.border_color="$COLOR_POPUP_BORDER"
-  popup.background.border_width=2
-  popup.background.corner_radius=9
-  popup.background.shadow.drawing=on
-  popup.blur_radius=50
-)
-
-# Date and time — hover/click for a month calendar
-# (aspauldingcode's "Calendar popup", see plugins/date.sh)
+# Date and time
 sketchybar --add item date right \
            --set date icon=􀧞  \
                       icon.color="$COLOR_IRIS" \
                       label.color="$COLOR_IRIS" \
                       update_freq=1 \
-                      script="$PLUGIN_DIR/date.sh" \
-                      "${POPUP_STYLE[@]}" \
-                      popup.horizontal=on \
-                      popup.align=center \
-                      popup.height=135 \
-           --subscribe date system_woke mouse.clicked mouse.entered mouse.exited mouse.exited.global
+                      script="$PLUGIN_DIR/date.sh"
 
-# Volume — click for slider + output devices, scroll to change, right-click
-# for Sound settings (FelixKratz/dotfiles volume widget, see plugins/volume.sh)
+# Volume level
 sketchybar --add item volume right \
            --set volume icon.color="$COLOR_PINE" \
                         label.color="$COLOR_PINE" \
                         script="$PLUGIN_DIR/volume.sh" \
-                        "${POPUP_STYLE[@]}" \
-                        popup.align=center \
-           --subscribe volume volume_change mouse.clicked mouse.scrolled mouse.exited.global \
-           --add slider volume.slider popup.volume 250 \
-           --set volume.slider slider.highlight_color="$COLOR_FOAM" \
-                               slider.background.height=6 \
-                               slider.background.corner_radius=3 \
-                               slider.background.color="$COLOR_HL_MED" \
-                               slider.knob=􀀁 \
-                               slider.knob.drawing=on \
-                               icon.drawing=off \
-                               label.drawing=off \
-                               background.color="$COLOR_HL_MED" \
-                               background.height=2 \
-                               background.y_offset=-20 \
-                               click_script='osascript -e "set volume output volume $PERCENTAGE"'
+           --subscribe volume volume_change
 
 # Battery level
 sketchybar --add item battery right \
