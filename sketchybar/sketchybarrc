@@ -30,20 +30,53 @@ sketchybar --default \
 
 # --- Items on the right ---
 
-# Date and time
+# Popup look for the community components below
+# (FelixKratz/dotfiles default.lua popup settings, Rosé Pine colours)
+POPUP_STYLE=(
+  popup.background.color="$COLOR_POPUP_BG"
+  popup.background.border_color="$COLOR_POPUP_BORDER"
+  popup.background.border_width=2
+  popup.background.corner_radius=9
+  popup.background.shadow.drawing=on
+  popup.blur_radius=50
+)
+
+# Date and time — hover/click for a month calendar
+# (aspauldingcode's "Calendar popup", see plugins/date.sh)
 sketchybar --add item date right \
            --set date icon=􀧞  \
                       icon.color="$COLOR_IRIS" \
                       label.color="$COLOR_IRIS" \
                       update_freq=1 \
-                      script="$PLUGIN_DIR/date.sh"
+                      script="$PLUGIN_DIR/date.sh" \
+                      "${POPUP_STYLE[@]}" \
+                      popup.horizontal=on \
+                      popup.align=center \
+                      popup.height=135 \
+           --subscribe date system_woke mouse.clicked mouse.entered mouse.exited mouse.exited.global
 
-# Volume level
+# Volume — click for slider + output devices, scroll to change, right-click
+# for Sound settings (FelixKratz/dotfiles volume widget, see plugins/volume.sh)
 sketchybar --add item volume right \
            --set volume icon.color="$COLOR_PINE" \
                         label.color="$COLOR_PINE" \
                         script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change
+                        "${POPUP_STYLE[@]}" \
+                        popup.align=center \
+           --subscribe volume volume_change mouse.clicked mouse.scrolled mouse.exited.global \
+           --add slider volume.slider popup.volume 250 \
+           --set volume.slider slider.highlight_color="$COLOR_FOAM" \
+                               slider.background.height=6 \
+                               slider.background.corner_radius=3 \
+                               slider.background.color="$COLOR_HL_MED" \
+                               slider.knob=􀀁 \
+                               slider.knob.drawing=on \
+                               icon.drawing=off \
+                               label.drawing=off \
+                               background.color="$COLOR_HL_MED" \
+                               background.height=2 \
+                               background.y_offset=-20 \
+                               click_script='osascript -e "set volume output volume $PERCENTAGE"'
 
 # Battery level
 sketchybar --add item battery right \
@@ -75,16 +108,92 @@ sketchybar --add item front_app right \
                            script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
 
-# Now playing (hidden when nothing is playing; click to play/pause)
-sketchybar --add item media right \
-           --set media script="$PLUGIN_DIR/media.sh" \
-                       update_freq=2 \
-                       drawing=off \
-                       scroll_texts=on \
-                       label.max_chars=12 \
-                       icon.color="$COLOR_LOVE" \
-                       label.color="$COLOR_LOVE" \
-           --subscribe media mouse.clicked system_woke
+# Now playing — album art + title / artist • album, text scrolls only on hover,
+# click the art to play/pause. Kcraft059/sketchybar-config music item
+# (sketchy-items/music.sh), placed on the right instead of left of the notch,
+# wrapped in this bar's pill. Scripts: plugins/music_artwork.sh, music_title.sh
+BAR_HEIGHT=43
+ARTWORK_MARGIN=10
+TITLE_MARGIN=$((3 + $BAR_HEIGHT / 4))
+INFO_WIDTH=80
+FONT="SF Pro"
+
+music_artwork=(
+	drawing=off
+	script="$PLUGIN_DIR/music_artwork.sh $ARTWORK_MARGIN $BAR_HEIGHT"
+	click_script="media-control toggle-play-pause"
+	icon="􀊆"
+	icon.drawing=off
+	icon.color="$COLOR_TEXT"
+	icon.shadow.drawing=on
+	icon.shadow.color="$COLOR_BASE"
+	icon.shadow.distance=3
+	icon.align=center
+	label.drawing=off
+	icon.padding_right=0
+	icon.padding_left=-3
+	background.drawing=on
+	background.color=0x00000000
+	background.height=$(($BAR_HEIGHT - $ARTWORK_MARGIN * 2))
+	background.image.border_color="$COLOR_MUTED"
+	background.image.border_width=1
+	background.image.corner_radius=4
+	background.image.padding_right=1
+	update_freq=0
+	padding_left=0
+	padding_right=8
+)
+
+music_title=(
+	label=Title
+	drawing=off
+	script="$PLUGIN_DIR/music_title.sh"
+	label.color="$COLOR_TEXT"
+	icon.drawing=off
+	background.drawing=off
+	label.align=right
+	label.width=$INFO_WIDTH
+	label.max_chars=13
+	label.font="$FONT:Semibold:10.0"
+	label.padding_left=0
+	label.padding_right=6
+	scroll_texts=off
+	padding_left=-$INFO_WIDTH
+	padding_right=0
+	y_offset=$(($BAR_HEIGHT / 2 - $TITLE_MARGIN))
+)
+
+music_subtitle=(
+	label=SubTitle
+	drawing=off
+	script="$PLUGIN_DIR/music_title.sh"
+	label.color="$COLOR_SUBTLE"
+	icon.drawing=off
+	background.drawing=off
+	label.align=right
+	label.width=$INFO_WIDTH
+	label.max_chars=14
+	label.font="$FONT:Semibold:9.0"
+	label.padding_left=0
+	label.padding_right=6
+	scroll_texts=off
+	padding_left=8
+	padding_right=0
+	y_offset=$((-($BAR_HEIGHT / 2) + $TITLE_MARGIN))
+)
+
+sketchybar --add item music right \
+           --set music "${music_artwork[@]}" \
+           --add item music.title right \
+           --set music.title "${music_title[@]}" \
+           --subscribe music.title mouse.entered mouse.exited \
+           --add item music.subtitle right \
+           --set music.subtitle "${music_subtitle[@]}" \
+           --subscribe music.subtitle mouse.entered mouse.exited \
+           --add bracket music.bracket music.subtitle music.title music \
+           --set music.bracket background.color="$COLOR_BG" \
+                               background.corner_radius=8 \
+                               background.height=30
 
 # --- Items on the left ---
 
