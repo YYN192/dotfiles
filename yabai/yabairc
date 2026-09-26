@@ -53,7 +53,6 @@ yabai -m config skip_window_focus_animation off
 yabai -m rule --add app="^System Settings$" manage=off
 yabai -m rule --add app="^Raycast$" manage=off
 yabai -m rule --add app="^java$" manage=off
-yabai -m rule --add app="^Claude$" manage=off
 
 # Jankyborders
 borders active_color=0xffc4a7e7 inactive_color=0xff6e6a86 width=5.0 hidpi=on
