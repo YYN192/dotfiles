@@ -14,11 +14,20 @@ if [ -z "$MODE" ]; then
     fi
 fi
 
+# Only reload sketchybar when the palette actually changes. At login dark-notify
+# fires while sketchybar is still running sketchybarrc, and a reload mid-config
+# leaves the right-side items without their --default styling.
+set_bar_colors() {
+    if ! cmp -s "$CONFIG/sketchybar/colors-$1.sh" "$CONFIG/sketchybar/colors.sh"; then
+        cp "$CONFIG/sketchybar/colors-$1.sh" "$CONFIG/sketchybar/colors.sh"
+        sketchybar --reload
+    fi
+}
+
 case "$MODE" in
     dark)
         # Sketchybar
-        cp "$CONFIG/sketchybar/colors-dark.sh" "$CONFIG/sketchybar/colors.sh"
-        sketchybar --reload
+        set_bar_colors dark
 
         # Starship
         sed -i '' 's/^palette = .*/palette = "rose-pine"/' "$CONFIG/starship.toml"
@@ -35,8 +44,7 @@ case "$MODE" in
 
     light)
         # Sketchybar
-        cp "$CONFIG/sketchybar/colors-dawn.sh" "$CONFIG/sketchybar/colors.sh"
-        sketchybar --reload
+        set_bar_colors dawn
 
         # Starship
         sed -i '' 's/^palette = .*/palette = "rose-pine-dawn"/' "$CONFIG/starship.toml"
