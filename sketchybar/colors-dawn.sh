@@ -13,5 +13,4 @@ COLOR_SPACE_UNSEL_FG="0xffd7827e"
 
 # Rosé Pine Dawn tokens used by the community components (now-playing music item)
 COLOR_BASE="0xfffaf4ed"
-COLOR_SUBTLE="0xff797593"
 COLOR_MUTED="0xff9893a5"

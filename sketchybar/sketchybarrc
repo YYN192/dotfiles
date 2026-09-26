@@ -75,92 +75,39 @@ sketchybar --add item front_app right \
                            script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
 
-# Now playing — album art + title / artist • album, text scrolls only on hover,
-# click the art to play/pause. Kcraft059/sketchybar-config music item
-# (sketchy-items/music.sh), placed on the right instead of left of the notch,
-# wrapped in this bar's pill. Scripts: plugins/music_artwork.sh, music_title.sh
-BAR_HEIGHT=43
-ARTWORK_MARGIN=10
-TITLE_MARGIN=$((3 + $BAR_HEIGHT / 4))
-INFO_WIDTH=80
-FONT="SF Pro"
+# Now playing — album art as the icon + "Title · Artist", scrolls only on
+# hover, click to play/pause. Live data and hover-scroll logic from
+# Kcraft059/sketchybar-config's music item (plugins/music_artwork.sh,
+# music_title.sh); laid out as one ordinary pill to match the rest of the bar.
+ART_SIZE=20
 
-music_artwork=(
-	drawing=off
-	script="$PLUGIN_DIR/music_artwork.sh $ARTWORK_MARGIN $BAR_HEIGHT"
-	click_script="media-control toggle-play-pause"
-	icon="􀊆"
-	icon.drawing=off
-	icon.color="$COLOR_TEXT"
-	icon.shadow.drawing=on
-	icon.shadow.color="$COLOR_BASE"
-	icon.shadow.distance=3
-	icon.align=center
-	label.drawing=off
-	icon.padding_right=0
-	icon.padding_left=-3
-	background.drawing=on
-	background.color=0x00000000
-	background.height=$(($BAR_HEIGHT - $ARTWORK_MARGIN * 2))
-	background.image.border_color="$COLOR_MUTED"
-	background.image.border_width=1
-	background.image.corner_radius=4
-	background.image.padding_right=1
-	update_freq=0
-	padding_left=0
-	padding_right=8
-)
-
-music_title=(
-	label=Title
-	drawing=off
-	script="$PLUGIN_DIR/music_title.sh"
-	label.color="$COLOR_TEXT"
-	icon.drawing=off
-	background.drawing=off
-	label.align=right
-	label.width=$INFO_WIDTH
-	label.max_chars=13
-	label.font="$FONT:Semibold:10.0"
-	label.padding_left=0
-	label.padding_right=6
-	scroll_texts=off
-	padding_left=-$INFO_WIDTH
-	padding_right=0
-	y_offset=$(($BAR_HEIGHT / 2 - $TITLE_MARGIN))
-)
-
-music_subtitle=(
-	label=SubTitle
-	drawing=off
-	script="$PLUGIN_DIR/music_title.sh"
-	label.color="$COLOR_SUBTLE"
-	icon.drawing=off
-	background.drawing=off
-	label.align=right
-	label.width=$INFO_WIDTH
-	label.max_chars=14
-	label.font="$FONT:Semibold:9.0"
-	label.padding_left=0
-	label.padding_right=6
-	scroll_texts=off
-	padding_left=8
-	padding_right=0
-	y_offset=$((-($BAR_HEIGHT / 2) + $TITLE_MARGIN))
+music=(
+  drawing=off
+  script="$PLUGIN_DIR/music_artwork.sh $ART_SIZE"
+  click_script="media-control toggle-play-pause"
+  icon="􀊆"                                   # play/pause flash over the art
+  icon.font="SF Pro:Bold:11.0"
+  icon.color=0x00000000                      # hidden until state changes
+  icon.shadow.drawing=on
+  icon.shadow.color="$COLOR_BASE"
+  icon.shadow.distance=2
+  icon.align=center
+  icon.width=$ART_SIZE
+  icon.padding_left=6
+  icon.padding_right=4
+  icon.background.drawing=on
+  icon.background.image.corner_radius=4
+  icon.background.image.border_color="$COLOR_MUTED"
+  icon.background.image.border_width=1
+  label.color="$COLOR_ROSE"
+  label.max_chars=11
+  scroll_texts=off
+  update_freq=0
 )
 
 sketchybar --add item music right \
-           --set music "${music_artwork[@]}" \
-           --add item music.title right \
-           --set music.title "${music_title[@]}" \
-           --subscribe music.title mouse.entered mouse.exited \
-           --add item music.subtitle right \
-           --set music.subtitle "${music_subtitle[@]}" \
-           --subscribe music.subtitle mouse.entered mouse.exited \
-           --add bracket music.bracket music.subtitle music.title music \
-           --set music.bracket background.color="$COLOR_BG" \
-                               background.corner_radius=8 \
-                               background.height=30
+           --set music "${music[@]}" \
+           --subscribe music mouse.entered mouse.exited
 
 # --- Items on the left ---
 

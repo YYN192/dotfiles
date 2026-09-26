@@ -1,31 +1,20 @@
 #!/bin/bash
-# Only scroll the now-playing title/subtitle while the mouse is over them.
+# Only scroll the now-playing label while the mouse is over it.
 #
 # Source: Kcraft059/sketchybar-config — plugins/music/script-title.sh
 #   https://github.com/Kcraft059/sketchybar-config
-# Local change: their log_handler.sh replaced by a no-op sendLog.
+# Local changes: acts on the single music pill ($NAME) instead of separate
+# title/subtitle items; their log_handler.sh replaced by a no-op sendLog.
 
 sendLog() { :; }
 
+# (local change: the original read the current state via `--query | jq`
+# first, but SketchyBar doesn't escape quotes in labels, so titles like
+# `Song "Live"` made that JSON invalid and hover-scroll stopped working.
+# Setting the value is idempotent, so just set it.)
 setscroll() {
-  STATE="$(sketchybar --query "music.title" | sed 's/\\n//g; s/\\\$//g; s/\\ //g' | jq -r '.geometry.scroll_texts')"
-
-
-	case "$1" in
-  "on")
-    target="off"
-    ;;
-  "off")
-    target="on"
-    ;;
-  esac
-
-  if [[ "$STATE" == "$target" ]]; then
-		sendLog "Toggled scroll for media title to $1" "vomit"
-    sketchybar --set "music.title" scroll_texts=$1
-    sketchybar --set "music.subtitle" scroll_texts=$1
-  fi
-
+  sendLog "Toggled scroll for media title to $1" "vomit"
+  sketchybar --set "$NAME" scroll_texts=$1
 }
 
 ### Only scroll text on mouse hover for better performances

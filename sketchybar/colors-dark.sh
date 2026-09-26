@@ -13,5 +13,4 @@ COLOR_SPACE_UNSEL_FG="0xffebbcba"
 
 # Rosé Pine tokens used by the community components (now-playing music item)
 COLOR_BASE="0xff191724"
-COLOR_SUBTLE="0xff908caa"
 COLOR_MUTED="0xff6e6a86"

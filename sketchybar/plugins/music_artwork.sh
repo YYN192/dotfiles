@@ -1,15 +1,28 @@
 #!/bin/bash
-# Now-playing artwork + title/subtitle, driven by `media-control stream`.
+# Now-playing pill (album art icon + "Title · Artist"), driven by `media-control stream`.
 #
 # Source: Kcraft059/sketchybar-config — plugins/music/script-artwork.sh
 #   https://github.com/Kcraft059/sketchybar-config
 # Local changes (everything else is the original logic):
+#   - one pill instead of artwork + two-line title/subtitle + bracket: the art is
+#     the icon's background image (cropped square), the label is "Title · Artist"
+#   - play/pause flash shown by icon colour (hiding the icon would hide the art)
+#   - hover events handed to music_title.sh before the stream starts
 #   - image size/format via macOS's built-in `sips` instead of ImageMagick
 #   - their log_handler.sh replaced by no-op sendLog/sendWarn
 #   - TMPDIR fallback + cache dir creation (launchd may not set TMPDIR)
 #   - dropped the `activities_update` trigger (it only fed their centre separator)
 
 export PATH=/opt/homebrew/bin/:$PATH
+
+# Hover events arrive here too (same item); don't start another stream for them
+case "$SENDER" in
+"mouse.entered" | "mouse.exited")
+	exec "$(dirname "$0")/music_title.sh"
+	;;
+esac
+
+source "$CONFIG_DIR/colors.sh"
 sendLog() { :; }
 sendWarn() { :; }
 
@@ -29,8 +42,7 @@ if [[ -n "$pids" ]]; then
 	kill -9 ${pids[@]} 2>/dev/null
 fi
 
-ARTWORK_MARGIN="$1"
-BAR_HEIGHT="$2"
+ART_SIZE="$1"
 
 ### Open a stream to get current media continously
 
@@ -85,42 +97,36 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 
 			sendLog "Artwork image generated at $tmpfile.$ext" "vomit"
 
-			### Calculate width of media item to fit bar height nicely
+			### Crop to a centred square, scale it to ART_SIZE
 
 			img_h=$(sips -g pixelHeight "$tmpfile.$ext" | awk '/pixelHeight:/ {print $2}')
 			img_w=$(sips -g pixelWidth "$tmpfile.$ext" | awk '/pixelWidth:/ {print $2}')
+			side=$(( img_w < img_h ? img_w : img_h ))
+			sips --cropToHeightWidth "$side" "$side" "$tmpfile.$ext" >/dev/null 2>&1
 
-			scale=$(bc <<<"scale=4;
-        ( ($BAR_HEIGHT - $ARTWORK_MARGIN * 2) / $img_h )
-      ")
-			icon_width=$(bc <<<"scale=0;
-        ( $img_w * $scale )
-      ")
+			scale=$(bc <<<"scale=4; $ART_SIZE / $side")
 
-			### Set artwork to image, then purge image
+			### Set artwork as the icon's background image, then purge image
 
-			sketchybar --set $NAME background.image=$tmpfile.$ext \
-				background.image.scale=$scale \
-				icon.width=$(printf "%.0f" $icon_width)
+			sketchybar --set $NAME icon.background.image=$tmpfile.$ext \
+				icon.background.image.scale=$scale
 
 			rm -f $tmpfile* && sendLog "Cleaned artwork image generated at $tmpfile.$ext" "vomit"
 		fi
 
-		### Set Title and artist + ?Album
+		### Set "Title · Artist" (artist omitted when empty, e.g. browser tabs)
 
 		if [[ $(echo $line | jq -r .payload.title) != "null" ]]; then
 
 			title_label="$(echo $line | jq -r .payload.title)"
-			artist="$(echo "$line" | jq -r .payload.artist)"
-			album="$(echo "$line" | jq -r .payload.album)"
+			artist="$(echo "$line" | jq -r '.payload.artist // empty')"
 
-			subtitle_label="$artist"
-			if [[ -n "$album" ]]; then
-				subtitle_label+=" • $album"
+			label="$title_label"
+			if [[ -n "$artist" ]]; then
+				label+=" · $artist"
 			fi
 
-			sketchybar --set $NAME.title label="$title_label" \
-				--set $NAME.subtitle label="$subtitle_label"
+			sketchybar --set $NAME label="$label"
 		fi
 
 		### Set Playing state indicator
@@ -129,24 +135,22 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 			case $playing in
 			"true")
 				sendLog "Updating playing state to play" "vomit"
-				sketchybar --set $NAME icon.padding_left=-3 \
-					--animate tanh 5 \
+				sketchybar --animate tanh 5 \
 					--set $NAME icon="􀊆" \
-					icon.drawing=on
+					icon.color="$COLOR_TEXT"
 				{
 					sleep 5
-					sketchybar --animate tanh 45 --set $NAME icon.drawing=false
+					sketchybar --animate tanh 45 --set $NAME icon.color=0x00000000
 				} &
 				;;
 			"false")
 				sendLog "Updating playing state to pause" "vomit"
-				sketchybar --set $NAME icon.padding_left=0 \
-					--animate tanh 5 \
+				sketchybar --animate tanh 5 \
 					--set $NAME icon="􀊄" \
-					icon.drawing=on
+					icon.color="$COLOR_TEXT"
 				{
 					sleep 5
-					sketchybar --animate tanh 45 --set $NAME icon.drawing=false
+					sketchybar --animate tanh 45 --set $NAME icon.color=0x00000000
 				} &
 				;;
 			esac
@@ -158,18 +162,14 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 			lastAppPID=$currentPID
 		fi
 
-		sketchybar --set $NAME drawing=on \
-			--set $NAME.title drawing=on \
-			--set $NAME.subtitle drawing=on
+		sketchybar --set $NAME drawing=on
 
 	else
 		### If media stopped being played / app playing media is closed; hide music player
 
 		sendLog "Media not playing $(if [[ -n $lastAppPID ]]; then echo "(media process: $lastAppPID)"; fi)" "debug"
 
-		sketchybar --set $NAME drawing=off \
-			--set $NAME.title drawing=off \
-			--set $NAME.subtitle drawing=off
+		sketchybar --set $NAME drawing=off
 
 		unset lastAppPID
 	fi
