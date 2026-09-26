@@ -9,12 +9,13 @@ sketchybar --bar position=top \
                blur_radius=30 \
                color=0x00000000 \
                display=main \
+               notch_width=185 \
                topmost=off
 
 # Item Defaults
 sketchybar --default \
-           padding_left=5 \
-           padding_right=5 \
+           padding_left=3 \
+           padding_right=3 \
            icon.font="SF Pro:Bold:16.0" \
            label.font="SF Pro:Bold:14.0" \
            icon.color="$COLOR_TEXT" \
@@ -69,7 +70,7 @@ sketchybar --add item media right \
                        update_freq=2 \
                        drawing=off \
                        scroll_texts=on \
-                       label.max_chars=24 \
+                       label.max_chars=12 \
                        icon.color="$COLOR_LOVE" \
                        label.color="$COLOR_LOVE" \
            --subscribe media mouse.clicked system_woke
@@ -84,7 +85,7 @@ for sid in "${SPACE_SIDS[@]}"; do
                      space=$sid \
                      icon=$sid \
                      label.font="sketchybar-app-font:Regular:18.0" \
-                     label.padding_right=20 \
+                     label.padding_right=14 \
                      label.y_offset=-2 \
                      label.color="$COLOR_ROSE" \
                      icon.color="$COLOR_ROSE" \
@@ -97,9 +98,12 @@ sketchybar --add item space_watcher center \
                                  script="$PLUGIN_DIR/space_windows.sh" \
            --subscribe space_watcher space_windows_change
 
-# Front app
-sketchybar --add item front_app left \
-           --set front_app icon.font="sketchybar-app-font:Regular:18.0" \
+# Front app — sits just right of the notch ("e"): with the macOS menu bar
+# auto-hidden the bar shares the notch row, and 10 spaces + the app name
+# don't fit left of it.
+sketchybar --add item front_app e \
+           --set front_app label.max_chars=10 \
+                           icon.font="sketchybar-app-font:Regular:18.0" \
                            icon.color="$COLOR_LOVE" \
                            label.color="$COLOR_LOVE" \
                            script="$PLUGIN_DIR/front_app.sh" \
