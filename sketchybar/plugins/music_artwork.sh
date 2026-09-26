@@ -157,7 +157,9 @@ media-control stream | grep --line-buffered 'data' | while IFS= read -r line; do
 				label+=" · $artist"
 			fi
 
-			short="$(shorten "$label" "$MAX_CHARS")"
+			# Resting label: just the title, with "…" only if the title itself is too
+			# long (the artist is in the full label shown on hover)
+			short="$(shorten "$title_label" "$MAX_CHARS")"
 			printf '%s' "$label" >"$LABEL_FULL"
 			printf '%s' "$short" >"$LABEL_SHORT"
 			sketchybar --set $NAME label="$short" scroll_texts=off
