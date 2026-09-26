@@ -30,20 +30,76 @@ sketchybar --default \
 
 # --- Items on the right ---
 
-# Date and time
+# Shared look for click popups
+POPUP_STYLE=(
+  popup.background.color="$COLOR_POPUP_BG"
+  popup.background.border_color="$COLOR_POPUP_BORDER"
+  popup.background.border_width=1
+  popup.background.corner_radius=10
+  popup.blur_radius=30
+  popup.y_offset=6
+)
+# Popup rows inherit the pill --default; turn the per-row pill off
+ROW_STYLE=(
+  background.drawing=off
+  padding_left=6
+  padding_right=6
+)
+
+# Date and time (click for a calendar)
 sketchybar --add item date right \
            --set date icon=􀧞  \
                       icon.color="$COLOR_IRIS" \
                       label.color="$COLOR_IRIS" \
                       update_freq=1 \
-                      script="$PLUGIN_DIR/date.sh"
+                      script="$PLUGIN_DIR/date.sh" \
+                      popup.align=right \
+                      "${POPUP_STYLE[@]}" \
+           --subscribe date mouse.clicked mouse.exited.global
 
-# Volume level
+sketchybar --add item date.header popup.date \
+           --set date.header "${ROW_STYLE[@]}" icon.drawing=off \
+                             label.color="$COLOR_IRIS"
+
+# cal prints up to 8 lines (month, weekdays, 4-6 weeks); date.sh fills them
+for i in 0 1 2 3 4 5 6 7; do
+  sketchybar --add item date.cal.$i popup.date \
+             --set date.cal.$i "${ROW_STYLE[@]}" icon.drawing=off \
+                               label.font="JetBrainsMonoNL Nerd Font:Regular:13.0" \
+                               label.color="$COLOR_TEXT" \
+                               label.padding_left=4 label.padding_right=4 \
+                               background.height=18
+done
+sketchybar --set date.cal.0 label.color="$COLOR_MUTED" \
+           --set date.cal.1 label.color="$COLOR_MUTED"
+
+sketchybar --add item date.open popup.date \
+           --set date.open "${ROW_STYLE[@]}" icon=􀉉 icon.color="$COLOR_FOAM" \
+                           label="Open Calendar" label.color="$COLOR_FOAM" \
+                           click_script="open -a Calendar; sketchybar --set date popup.drawing=off"
+
+# Volume level (click for a slider + output device list)
 sketchybar --add item volume right \
            --set volume icon.color="$COLOR_PINE" \
                         label.color="$COLOR_PINE" \
                         script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change
+                        popup.align=center \
+                        "${POPUP_STYLE[@]}" \
+           --subscribe volume volume_change mouse.clicked mouse.exited.global
+
+sketchybar --add slider volume.slider popup.volume 200 \
+           --set volume.slider "${ROW_STYLE[@]}" \
+                               icon.drawing=off label.drawing=off \
+                               slider.highlight_color="$COLOR_PINE" \
+                               slider.background.height=6 \
+                               slider.background.corner_radius=3 \
+                               slider.background.color="$COLOR_POPUP_BORDER" \
+                               slider.knob=􀀁 \
+                               slider.knob.color="$COLOR_TEXT" \
+                               slider.knob.drawing=on \
+                               script="$PLUGIN_DIR/volume_slider.sh" \
+           --subscribe volume.slider mouse.clicked
+# (output device rows, volume.device.N, are added by volume.sh on click)
 
 # Battery level
 sketchybar --add item battery right \
@@ -75,16 +131,17 @@ sketchybar --add item front_app right \
                            script="$PLUGIN_DIR/front_app.sh" \
            --subscribe front_app front_app_switched
 
-# Now playing (hidden when nothing is playing; click to play/pause)
+# Now playing (hidden when nothing is playing; click to play/pause;
+# the title only scrolls while hovered)
 sketchybar --add item media right \
            --set media script="$PLUGIN_DIR/media.sh" \
                        update_freq=2 \
                        drawing=off \
-                       scroll_texts=on \
+                       scroll_texts=off \
                        label.max_chars=12 \
                        icon.color="$COLOR_LOVE" \
                        label.color="$COLOR_LOVE" \
-           --subscribe media mouse.clicked system_woke
+           --subscribe media mouse.clicked mouse.entered mouse.exited system_woke
 
 # --- Items on the left ---
 
