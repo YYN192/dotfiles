@@ -120,7 +120,7 @@ sketchybar --add item music right \
 
 # --- Items on the left ---
 
-# Space indicators
+# Space indicators (app icons + notch-overflow logic: plugins/spaces_layout.sh)
 SPACE_SIDS=(1 2 3 4 5 6 7 8 9 10)
 for sid in "${SPACE_SIDS[@]}"; do
   sketchybar --add space space.$sid left \
@@ -138,7 +138,8 @@ done
 
 sketchybar --add item space_watcher center \
            --set space_watcher background.drawing=off \
-                                 script="$PLUGIN_DIR/space_windows.sh" \
-           --subscribe space_watcher space_windows_change
+                                 drawing=off \
+                                 script="$PLUGIN_DIR/spaces_layout.sh" \
+           --subscribe space_watcher space_windows_change space_change display_change system_woke
 
 sketchybar --update
