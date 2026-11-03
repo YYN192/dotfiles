@@ -9,7 +9,8 @@ cmd + alt + ctrl - 0x2C : open -g "raycast://script-commands/keymap"
 # Super + Return  -> open a new terminal (Ghostty)
 cmd + alt + ctrl - return : open -na Ghostty
 # Super + D       -> app launcher (Raycast)
-cmd + alt + ctrl - d : open -a Raycast
+# Disabled: Raycast now owns this combo as its own hotkey (Settings -> General -> Raycast Hotkey)
+# cmd + alt + ctrl - d : open -a Raycast
 # Super + C       -> close the focused window (Hyprland killactive)
 cmd + alt + ctrl - c : yabai -m window --close
 # Super + V       -> toggle floating (same as Super + Space below)

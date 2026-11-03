@@ -8,7 +8,7 @@ pid="$1"
 
 # Apps to leave running even when they have no open windows.
 # Pipe-separated, must match the .app bundle name (e.g. 'Finder|Music|Spotify').
-EXCLUDE='Finder'
+EXCLUDE='Finder|Raycast'
 
 # Let the window finish closing before we count what's left.
 sleep 0.2
@@ -19,6 +19,15 @@ remaining=$(yabai -m query --windows 2>/dev/null \
 
 # Still has windows (or the query failed) -> leave it alone.
 [ "$remaining" = "0" ] || exit 0
+
+# Never quit a process that lives inside an excluded app's bundle. This also
+# covers helper processes (e.g. "Raycast.app/.../Raycast Helper.app"), whose
+# own name would not match the exclusion list below.
+procpath=$(ps -p "$pid" -o comm= 2>/dev/null)
+IFS='|' read -ra _excluded <<< "$EXCLUDE"
+for _app in "${_excluded[@]}"; do
+  case "$procpath" in *"/$_app.app/"*) exit 0 ;; esac
+done
 
 # Resolve a human-readable app name from the PID.
 appname=$(ps -p "$pid" -o comm= 2>/dev/null | sed -E 's#.*/([^/]+)\.app/.*#\1#')
