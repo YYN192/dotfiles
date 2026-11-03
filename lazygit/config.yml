@@ -1,0 +1,4 @@
+# Colours come from themes/rose-pine*.yml via LG_CONFIG_FILE (fish/conf.d/cli-tools.fish).
+gui:
+  nerdFontsVersion: "3"
+  showIcons: true

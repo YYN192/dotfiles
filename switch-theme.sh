@@ -48,6 +48,7 @@ case "$MODE" in
         sed -i '' 's/^palette = .*/palette = "rose-pine"/' "$CONFIG/starship.toml"
 
         # Fish
+        fish -c 'set -U rose_pine_mode dark' 2>/dev/null
         fish -c 'fish_config theme choose "Rosé Pine"' 2>/dev/null
         sed -i '' 's/^set --global fish_color_command .*/set --global fish_color_command c4a7e7/' "$HOME/.config/fish/conf.d/fish_frozen_theme.fish"
 
@@ -66,6 +67,7 @@ case "$MODE" in
         sed -i '' 's/^palette = .*/palette = "rose-pine-dawn"/' "$CONFIG/starship.toml"
 
         # Fish
+        fish -c 'set -U rose_pine_mode light' 2>/dev/null
         fish -c 'fish_config theme choose "Rosé Pine Dawn"' 2>/dev/null
         sed -i '' 's/^set --global fish_color_command .*/set --global fish_color_command 907aa9/' "$HOME/.config/fish/conf.d/fish_frozen_theme.fish"
 
