@@ -40,9 +40,11 @@
 
 !scripts/
 !scripts/spicetify-autoupdate.sh
+!scripts/login-apps.sh
 
 !launchd/
 !launchd/com.user.spicetify-autoupdate.plist
+!launchd/com.user.login-apps.plist
 
 !fish/conf.d/
 !fish/conf.d/cli-tools.fish
