@@ -11,6 +11,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 echo "--- Homebrew ---"
 if ! command -v brew &>/dev/null; then
     echo "Please install Homebrew first! https://brew.sh/"
+    exit 1
 fi
 
 # ── Taps ──────────────────────────────────────────────────────────────────────
@@ -29,14 +30,20 @@ brew install \
     fish \
     fisher \
     media-control \
-    openjdk@21 \
+    neovim \
     sketchybar \
     skhd \
     starship \
     yabai
 
+# Modern CLI tools (wired up in fish/conf.d/cli-tools.fish)
+brew install atuin bat eza fd fzf lazydocker lazygit ripgrep yazi zoxide
+
 echo "--- Casks ---"
-brew install --cask ghostty raycast
+brew install --cask ghostty raycast karabiner-elements
+
+echo "--- Fonts ---"
+brew install --cask font-sf-pro font-jetbrains-mono-nerd-font font-sketchybar-app-font sf-symbols
 
 # ── Fish as default shell ─────────────────────────────────────────────────────
 echo "--- Fish shell ---"
@@ -54,10 +61,7 @@ fish -c "fisher update"
 
 # ── Script permissions ────────────────────────────────────────────────────────
 echo "--- Script permissions ---"
-chmod +x "$HOME/.config/switch-theme.sh"
-# These two fish theme files aren't shipped in the repo; guard so `set -e` doesn't abort the install.
-[ -f "$HOME/.config/fish/set-dark-theme.fish" ]  && chmod +x "$HOME/.config/fish/set-dark-theme.fish"
-[ -f "$HOME/.config/fish/set-light-theme.fish" ] && chmod +x "$HOME/.config/fish/set-light-theme.fish"
+chmod +x "$HOME/.config/switch-theme.sh" "$HOME"/.config/sketchybar/plugins/*.sh "$HOME"/.config/scripts/*.sh
 
 # ── Yabai scripting addition sudoers entry ────────────────────────────────────
 echo "--- Yabai scripting addition ---"
@@ -117,6 +121,11 @@ echo "Done! Restart for the changes to take effect, then run:"
 echo ""
 echo "  yabai --start-service"
 echo "  brew services start sketchybar"
+echo "  skhd --start-service"
+echo ""
+echo "Open Karabiner-Elements once and grant it permissions; it reads ~/.config/karabiner/karabiner.json"
+echo "(Caps Lock = Super/Esc, Cmd + Caps = switch keyboard language)."
+echo "Neovim (LazyVim + Rose Pine) installs its plugins on first launch: just run nvim."
 echo ""
 echo "A few things to note:"
 echo ""
