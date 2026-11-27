@@ -8,7 +8,7 @@
 !switch-theme.sh
 
 !assets/
-!assets/*
+!assets/**
 
 !btop/
 !btop/btop.conf
@@ -77,3 +77,13 @@
 
 !karabiner/
 !karabiner/karabiner.json
+
+!nvim/
+!nvim/init.lua
+!nvim/lazy-lock.json
+!nvim/stylua.toml
+!nvim/.neoconf.json
+!nvim/.gitignore
+!nvim/LICENSE
+!nvim/lua/
+!nvim/lua/**
