@@ -1,0 +1,130 @@
+{
+  "profiles": [
+    {
+      "complex_modifications": {
+        "rules": [
+          {
+            "description": "Cmd + Caps (Super) tapped -> toggle US / Bulgarian Phonetic",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_command",
+                    "modifiers": [
+                      "left_option",
+                      "left_control"
+                    ]
+                  }
+                ],
+                "to_if_alone": [
+                  {
+                    "select_input_source": {
+                      "input_source_id": "^com\\.apple\\.keylayout\\.Bulgarian-Phonetic$"
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [
+                      {
+                        "input_source_id": "^com\\.apple\\.keylayout\\.US$"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_command",
+                    "modifiers": [
+                      "left_option",
+                      "left_control"
+                    ]
+                  }
+                ],
+                "to_if_alone": [
+                  {
+                    "select_input_source": {
+                      "input_source_id": "^com\\.apple\\.keylayout\\.US$"
+                    }
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [
+                      {
+                        "input_source_id": "^com\\.apple\\.keylayout\\.Bulgarian-Phonetic$"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "description": "Caps lock key -> hyper key without shift (⌘⌥⌃), Escape when tapped",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "caps_lock",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_command",
+                    "modifiers": [
+                      "left_option",
+                      "left_control"
+                    ]
+                  }
+                ],
+                "to_if_alone": [
+                  {
+                    "key_code": "escape"
+                  }
+                ],
+                "type": "basic"
+              }
+            ]
+          }
+        ]
+      },
+      "name": "Caps",
+      "selected": true,
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "iso"
+      }
+    }
+  ]
+}

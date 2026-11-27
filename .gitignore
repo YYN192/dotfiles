@@ -74,3 +74,6 @@
 
 !atuin/
 !atuin/config.toml
+
+!karabiner/
+!karabiner/karabiner.json
